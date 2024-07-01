@@ -54,7 +54,7 @@ ble/test/start-section 'ble/main' 21
     ble/function#pop ble/bin/readlink
   }
 
-  ble/test/chdir
+  ble/test/chdir || exit
   cd -P .
 
   command mkdir -p ab/cd/ef
