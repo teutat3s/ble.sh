@@ -276,6 +276,43 @@ fi 3>&2 4<&0 5>&1 &>/dev/null # set -x 対策 #D0930
   \builtin eval -- "$_ble_bash_FUNCNEST_adjust"
 
   \builtin unset -v POSIXLY_CORRECT
+
+  _ble_bash_POSIXLY_CORRECT_adjust='
+    if [[ ! ${_ble_bash_POSIXLY_CORRECT_adjusted-} ]]; then
+      _ble_bash_POSIXLY_CORRECT_adjusted=1
+      _ble_bash_POSIXLY_CORRECT_set=${POSIXLY_CORRECT+set}
+      _ble_bash_POSIXLY_CORRECT=${POSIXLY_CORRECT-}
+      if [[ $_ble_bash_POSIXLY_CORRECT_set ]]; then
+        \builtin unset -v POSIXLY_CORRECT
+      fi
+
+      # ユーザが触ったかもしれないので何れにしても workaround を呼び出す。
+      ble/base/workaround-POSIXLY_CORRECT
+    fi'
+  _ble_bash_POSIXLY_CORRECT_unset='
+    if [[ ${POSIXLY_CORRECT+set} ]]; then
+      \builtin unset -v POSIXLY_CORRECT
+      ble/base/workaround-POSIXLY_CORRECT
+    fi'
+  _ble_bash_POSIXLY_CORRECT_local_adjust='
+    \builtin local _ble_local_POSIXLY_CORRECT _ble_local_POSIXLY_CORRECT_set
+    _ble_local_POSIXLY_CORRECT_set=${POSIXLY_CORRECT+set}
+    _ble_local_POSIXLY_CORRECT=${POSIXLY_CORRECT-}
+    '$_ble_bash_POSIXLY_CORRECT_unset
+  _ble_bash_POSIXLY_CORRECT_local_leave='
+    if [[ $_ble_local_POSIXLY_CORRECT_set ]]; then
+      POSIXLY_CORRECT=$_ble_local_POSIXLY_CORRECT
+    fi'
+  _ble_bash_POSIXLY_CORRECT_local_enter='
+    _ble_local_POSIXLY_CORRECT_set=${POSIXLY_CORRECT+set}
+    _ble_local_POSIXLY_CORRECT=${POSIXLY_CORRECT-}
+    '$_ble_bash_POSIXLY_CORRECT_unset
+  _ble_bash_POSIXLY_CORRECT_local_return='
+    \builtin local _ble_local_POSIXLY_CORRECT_ext=$?
+    if [[ $_ble_local_POSIXLY_CORRECT_set ]]; then
+      POSIXLY_CORRECT=$_ble_local_POSIXLY_CORRECT
+    fi
+    \return "$_ble_local_POSIXLY_CORRECT_ext"'
 } 2>/dev/null
 
 function ble/base/workaround-POSIXLY_CORRECT {
